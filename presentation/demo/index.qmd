@@ -1,0 +1,250 @@
+---
+title: "Do the Data Fit Mendel?"
+subtitle: "Using the &chi;^2^ test to evaluate genetic crosses"
+author: "Example Student"
+institute: "BIOL 110 · The Community College of Baltimore County"
+format:
+  revealjs:
+    slide-number: true
+    controls: true
+    preview-links: auto
+    css: styles.css
+    include-in-header: pdf-export.html
+    footer: "&chi;^2^ testing in genetics · BIOL 110 example presentation"
+resources:
+  - chisq.ipynb
+---
+
+## Why do we need a statistical test?
+
+- Mendel's laws predict **ratios** of offspring, like 3:1 or 9:3:3:1
+- Real crosses almost never match those ratios exactly
+- So how far off is *too* far off?
+
+. . .
+
+The **chi-square (&chi;^2^) goodness-of-fit test** tells us whether the difference between what we **observed** and what we **expected** is small enough to be explained by chance.
+
+::: notes
+Open with the question, not the formula. Ask the audience: if you counted 78 tall and 22 short plants instead of 75 and 25, would you say Mendel was wrong? Pause for a moment before revealing the answer.
+:::
+
+## Background: where expected ratios come from
+
+:::: {.columns}
+::: {.column width="45%"}
+A monohybrid cross of two heterozygotes (Pp &times; Pp):
+
+|       | **P** | **p** |
+|-------|:-----:|:-----:|
+| **P** | PP    | Pp    |
+| **p** | Pp    | pp    |
+
+: Punnett square for Pp &times; Pp {tbl-colwidths="[20,40,40]"}
+:::
+
+::: {.column width="55%"}
+- Genotypes: 1 PP : 2 Pp : 1 pp
+- Phenotypes: **3 dominant : 1 recessive**
+- A dihybrid cross (PpSs &times; PpSs) gives **9 : 3 : 3 : 1**
+- These ratios were first reported by Mendel (1866)
+:::
+::::
+
+::: notes
+Briefly connect to the Punnett squares the class completed in Lab 11. Emphasize that the Punnett square gives probabilities, so the observed counts will vary around them.
+:::
+
+## Hypotheses
+
+Every &chi;^2^ test starts with two competing statements:
+
+- **Null hypothesis** ($H_0$): the observed counts fit the expected Mendelian ratio; any differences are due to random chance.
+- **Alternative hypothesis** ($H_1$): the observed counts do **not** fit the expected ratio.
+
+. . .
+
+We choose a significance level before looking at the data: $\alpha = 0.05$.
+
+::: notes
+Stress that the test is built around the null hypothesis. We never "prove" the null; we either reject it or fail to reject it.
+:::
+
+## The &chi;^2^ statistic
+
+$$
+\chi^2 = \sum_{i=1}^{k} \frac{(O_i - E_i)^2}{E_i}
+$$
+
+- $O_i$ = observed count in category $i$
+- $E_i$ = expected count in category $i$ = total $\times$ expected proportion
+- $k$ = number of categories
+
+. . .
+
+Degrees of freedom: $df = k - 1$
+
+::: notes
+Walk through each piece of the formula. Squaring removes negative signs; dividing by E scales each difference relative to what we expected. Introduced by Pearson (1900).
+:::
+
+## Critical values {.critical-values}
+
+If $\chi^2$ is greater than the critical value, we **reject** $H_0$.
+
+::: {.smallfont}
+{{< embed chisq.ipynb#crit-values echo=true >}}
+:::
+
+::: aside
+Critical values at $\alpha = 0.05$, computed in R with `qchisq()`. These match the table in Chapter 11 of the lab manual.
+:::
+
+::: notes
+Point out that students do not need to memorize these; R or a table provides them. Highlight 3.84 for df = 1 and 7.81 for df = 3, the two values used in the lab.
+:::
+
+## Example 1: monohybrid cross (3:1) {.smaller .larger-code}
+
+Data from the Chapter 11 worked example: 78 tall and 22 short plants.
+
+{{< embed chisq.ipynb#mono-data echo=true >}}
+
+. . .
+
+{{< embed chisq.ipynb#mono-test echo=true >}}
+
+::: notes
+Show that the hand calculation in the lab manual and R agree: 0.12 + 0.36 = 0.48. With df = 1, 0.48 is well below 3.84, and the p-value (0.49) is far above 0.05.
+:::
+
+## Example 1: interpretation
+
+- $\chi^2 = 0.48 < 3.84$ (critical value, $df = 1$)
+- $p = 0.49 > 0.05$
+
+. . .
+
+**Conclusion:** we **fail to reject** $H_0$. The data are consistent with a 3:1 ratio; the small differences are likely due to chance.
+
+::: notes
+Model the exact wording students should use in their own lab reports.
+:::
+
+## Example 2: dihybrid cross (9:3:3:1) {.smaller .larger-code}
+
+Data from the Chapter 11 worked example: 320 seeds.
+
+{{< embed chisq.ipynb#di-data echo=true >}}
+
+::: notes
+Ask the audience which category contributes most to chi-square. Wrinkled yellow contributes 6.67 of the 8.89 total.
+:::
+
+## Example 2: the test
+
+{{< embed chisq.ipynb#di-test echo=true >}}
+
+- $\chi^2 = 8.89$ with $df = 4 - 1 = 3$
+- $p = 0.03$, which is less than 0.05
+
+::: aside
+The lab manual reports 8.90 because each term was rounded before adding. Rounding only at the end gives 8.89; the conclusion is the same.
+:::
+
+::: notes
+Compare R's result to the hand calculation in the lab manual and explain the small rounding difference. Good practice: keep full precision until the final step.
+:::
+
+## Observed vs. expected {.observed-expected}
+
+{{< embed chisq.ipynb#obs-exp-plot >}}
+
+Wrinkled yellow seeds (40 observed vs. 60 expected) account for most of the &chi;^2^ value.
+
+::: notes
+A figure makes the mismatch visible immediately. Every figure in a presentation should have a clear purpose and labeled axes.
+:::
+
+## Where does our result fall?
+
+{{< embed chisq.ipynb#dist-plot >}}
+
+$\chi^2 = 8.89 > 7.81$, so we **reject** $H_0$: the data do not fit a 9:3:3:1 ratio.
+
+::: notes
+The shaded area is the 5% rejection region for df = 3. Our statistic falls inside it. Possible biological explanations: linked genes, reduced survival of one phenotype, or counting errors.
+:::
+
+## Human connection: MN blood groups
+
+- The M and N blood-group alleles are **codominant**, so all three genotypes (MM, MN, NN) can be identified from a blood test
+- Under **Hardy–Weinberg equilibrium** (Hardy, 1908), genotype frequencies are $p^2 : 2pq : q^2$, where $p$ and $q$ are the allele frequencies
+- Data: genotypes of 1,279 people in England (Race & Sanger, 1975)
+
+::: notes
+This applies the same test to human genetics. Here the expected values come from the population's own allele frequencies instead of a Punnett square.
+:::
+
+## Expected MN genotypes {.smaller .larger-code .mn-genotypes}
+
+{{< embed chisq.ipynb#hwe-data echo=true >}}
+
+::: notes
+Walk through the allele frequency calculation: each MM person carries two M alleles and each MN person carries one.
+:::
+
+## Human connection: result
+
+{{< embed chisq.ipynb#hwe-test echo=true >}}
+
+- $df = 3 - 1 - 1 = 1$, because one extra value ($p$) was **estimated from the data**
+- $\chi^2 = 0.027 < 3.84$, $p = 0.87$: we **fail to reject** $H_0$
+
+The population's MN genotypes are consistent with Hardy–Weinberg equilibrium.
+
+::: notes
+Point out the degrees-of-freedom subtlety: we lose one df for each parameter estimated from the data. That's why chisq.test's default df would be wrong here, so the p-value was computed with pchisq.
+:::
+
+## Limitations
+
+- &chi;^2^ needs **counts**, not percentages or measurements
+- Each expected count should be **at least 5**
+- Failing to reject $H_0$ does **not prove** the hypothesis is true
+- A fit can even be *too* good: Fisher (1936) argued that Mendel's published data matched expectations more closely than chance would predict
+
+::: notes
+End the body of the talk with critical thinking. The Fisher anecdote shows that statistics can be used to evaluate the reliability of data, not only hypotheses.
+:::
+
+## Conclusion
+
+- Genetics predicts **expected ratios**; real data vary by chance
+- &chi;^2^ tells us if the variation is larger than chance would produce
+- Compare $\chi^2$ to the critical value and state a conclusion about $H_0$
+- The same test works for plants and human populations
+
+**Your turn:** apply the test to the corn-ear counts you collected in Lab 11.
+
+::: notes
+Summarize in three to four points and finish with a clear call to action that connects back to the lab.
+:::
+
+## References {.smaller}
+
+::: {style="font-size: 0.8em;"}
+Fisher, R. A. (1936). Has Mendel's work been rediscovered? *Annals of Science, 1*(2), 115–137. <https://doi.org/10.1080/00033793600200111>
+
+Hardy, G. H. (1908). Mendelian proportions in a mixed population. *Science, 28*(706), 49–50. <https://doi.org/10.1126/science.28.706.49>
+
+Mateja, G. (2026). Mendelian genetics in corn and chi-square testing. In *Introduction to human biology laboratory workbook* (Chapter 11). The Community College of Baltimore County.
+
+Mendel, G. (1866). Versuche über Pflanzen-Hybriden. *Verhandlungen des naturforschenden Vereines in Brünn, 4*, 3–47.
+
+Pearson, K. (1900). On the criterion that a given system of deviations from the probable in the case of a correlated system of variables is such that it can be reasonably supposed to have arisen from random sampling. *Philosophical Magazine, Series 5, 50*(302), 157–175. <https://doi.org/10.1080/14786440009463897>
+
+Race, R. R., & Sanger, R. (1975). *Blood groups in man* (6th ed.). Blackwell Scientific.
+
+R analysis: [chisq.ipynb](chisq.ipynb)
+:::

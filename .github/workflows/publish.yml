@@ -21,8 +21,15 @@ jobs:
         with:
           tinytex: true
 
+      - name: Point GitHub links at this repository
+        run: |
+          printf 'book:\n  repo-url: %s/%s\n  repo-branch: %s\n' \
+            "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" > _quarto-github.yml
+
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
+        env:
+          QUARTO_PROFILE: github
         with:
           target: gh-pages
 

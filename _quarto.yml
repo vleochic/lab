@@ -1,5 +1,7 @@
 project:
   type: book
+  # Books only render chapters, so render the revealjs deck separately
+  pre-render: quarto render presentation/demo/index.qmd
 book:
   title: Introduction to Human Biology Laboratory Workbook
   author:
@@ -7,7 +9,9 @@ book:
     affiliations:
       - The Community College of Baltimore County
   date: "2026"
+  # GitHub Actions overrides repo-url so forks link to their own repo (see publish.yml)
   repo-url: https://github.com/maptv/lab
+  repo-actions: [edit, source]
   downloads: [pdf, epub, docx]
   chapters:
     - index.qmd
@@ -25,6 +29,7 @@ book:
     - Laboratory_Exercise_09_Photosynthesis_Respiration.qmd
     - Laboratory_Exercise_11_Mendelian_Genetics_in_Corn_and_Chi_Square_Testing.qmd
     - Laboratory_Exercise_12_Introduction_to_Mendelian_Genetics.qmd
+    - presentation/index.qmd
 format:
   html:
     theme:

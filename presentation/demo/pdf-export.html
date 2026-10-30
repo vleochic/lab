@@ -1,0 +1,6 @@
+<script>
+  // Opening the deck with ?pdf-export (used to make demo.pdf) turns off browser-only styles
+  if (new URLSearchParams(window.location.search).has("pdf-export")) {
+    document.documentElement.classList.add("pdf-export");
+  }
+</script>

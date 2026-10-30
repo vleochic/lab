@@ -6,3 +6,6 @@ _book
 
 /.quarto/
 **/*.quarto_ipynb
+_publish.yml
+presentation/demo/index.html
+presentation/demo/index_files/
